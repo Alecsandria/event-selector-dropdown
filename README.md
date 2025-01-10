@@ -13,3 +13,4 @@ User experience considerations:
 * Scannable list of options (sufficient spacing between options).
 * Search input has been added to filter options. Can be useful in situations where there are hundreds of options.
 * Selected options can all be removed at once or individually.
+* Clicking outside of the dropdown component closes it.
