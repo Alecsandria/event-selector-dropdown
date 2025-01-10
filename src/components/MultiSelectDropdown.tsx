@@ -1,24 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import Fuse from 'fuse.js'
 
 import arrowDown from "../assets/arrow-down.svg";
 import xMark from "../assets/x-mark.svg";
 import { SelectedEvent } from "../events";
 import SelectedEvents from "./SelectedEvents";
 import MultiSelectListItem from "./MultiSelectListItem";
+import useClickOutside from "./useClickOutside";
+import getFilteredOptions from "./multi-select-utils";
 
 /**
  * TODO:
- * - Add click away functionality.
  * - Make keyboard navigation work nicely with hover functionality.
- * - Add search input.
- * - Search input should filter options as user types.
  */
 
-const fuseOptions = {
-  keys: ['label'],
-}
 
 type MultiSelectDropdownProps<Option extends { id: string; label: string }> = {
   id: string;
@@ -29,13 +24,15 @@ type MultiSelectDropdownProps<Option extends { id: string; label: string }> = {
 }
 
 function MultiSelectDropdown<Option extends { id: string; label: string }>(props: MultiSelectDropdownProps<Option>) {
-  const fuse = new Fuse(props.options, fuseOptions);
-
+  
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  useClickOutside(dropdownRef, () => setOpen(false));
+  
   const [open, setOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [searchInput, setSearchInput] = useState("");
-
-  const filteredSearchResults = fuse.search(searchInput);
+  
+  const filteredOptions = getFilteredOptions(props.options, searchInput);
 
   useEffect(() => {
     if (!open) {
@@ -59,17 +56,20 @@ function MultiSelectDropdown<Option extends { id: string; label: string }>(props
     }
   }
 
+  const handleEscape = () => {
+    if (focusedIndex >= 0) {
+      setFocusedIndex(-1);
+    } else {
+      setOpen(false);
+    }
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!open) return;
 
     switch (event.key) {
       case "Escape":
-        if (focusedIndex >= 0) {
-          setFocusedIndex(-1);
-          break
-        }
-
-        setOpen(false);
+        handleEscape();
         break;
       case "ArrowDown":
         setFocusedIndex(prev => (prev < props.options.length - 1 ? prev + 1 : 0));
@@ -103,7 +103,7 @@ function MultiSelectDropdown<Option extends { id: string; label: string }>(props
   }
 
   return (
-    <div className="relative w-fit min-w-80">
+    <div ref={dropdownRef} className="relative w-fit min-w-80">
       <div className="space-y-1 w-full">
         <label htmlFor={props.id} className="font-medium">{props.label}</label>
         <button
@@ -131,6 +131,7 @@ function MultiSelectDropdown<Option extends { id: string; label: string }>(props
         role="listbox"
         aria-multiselectable={true}
         tabIndex={-1}
+        onKeyDown={handleKeyDown}
         className={clsx(
           "select-dropdown",
           open ? "block" : "hidden",
@@ -144,17 +145,7 @@ function MultiSelectDropdown<Option extends { id: string; label: string }>(props
           value={searchInput}
           onChange={handleSearch}
         />
-        {filteredSearchResults.length > 0 ? filteredSearchResults.map((filteredResult, index) => (
-          <MultiSelectListItem
-            key={filteredResult.item.id}
-            index={index}
-            id={filteredResult.item.id}
-            label={filteredResult.item.label}
-            isSelected={isSelected(filteredResult.item.id)}
-            onSelect={handleSelect(filteredResult.item.id, filteredResult.item.label)}
-            focusedIndex={focusedIndex}
-          />
-        )) : props.options.map((option, index) => (
+        {filteredOptions.map((option, index) => (
           <MultiSelectListItem
             key={option.id}
             index={index}
