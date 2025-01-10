@@ -10,7 +10,7 @@ type SelectedEventsProps = {
 
 const SelectedEvents = (props: SelectedEventsProps) => {
   if (props.selected.length === 0) {
-    return <span className="text-slate-500">Select event(s)</span>;
+    return <span className="text-slate-500">Choose one or multiple events</span>;
   }
 
   return <span className="flex items-center gap-2">

@@ -1,50 +1,15 @@
-# React + TypeScript + Vite
+## Event Selector
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a multi-select dropdown component that allows users to select multiple events.
 
-Currently, two official plugins are available:
+* Users can select none, one, or multiple events.
+* When the form is submitted, an alert is shown with the selected event ids. This can be used to make an API call for the selected events.
+* Added a search input to filter the options. This could be shown conditionally based on the number of options.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+User experience considerations:
+* Clear label for the dropdown.
+* Placeholder text for the dropdown.
+* Keyboard navigation for the dropdown.
+* Scannable list of options (sufficient spacing between options).
+* Search input has been added to filter options. Can be useful in situations where there are hundreds of options.
+* Selected options can all be removed at once or individually.
